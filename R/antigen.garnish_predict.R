@@ -472,7 +472,7 @@ merge_predictions <- function(l, dt){
       # merge netMHC by program type
 
 progl <- lapply(l %>% seq_along, function(dti){
-          l[[dti]]$command[1] %>% stringr::str_extract("net[A-Za-z]+")
+          l[["dti"]]$command[1] %>% stringr::str_extract("net[A-Za-z]+")
           })
 
        # merge netMHC output
@@ -1264,9 +1264,6 @@ garnish_predictions <- function(dt = NULL,
     silent = TRUE)
   })
 
-  # magrittr version check, this will not hide the error, only the NULL return on successful exit
-  invisible(check_dep_versions())
-
   if (missing(dt) & missing(path)) stop("dt and path are missing.")
   if (!missing(dt) & !missing(path)) stop("Choose dt or path input.")
 
@@ -1278,12 +1275,6 @@ garnish_predictions <- function(dt = NULL,
     stop("Input must be a data table.")
 
   if (!"MHC" %chin% names(dt)) stop("Input must include MHC alleles, see ?garnish_predictions")
-
-  # if class of MHC is a list column, it won't bug until first merge in make_BLAST_uuid, added this.
-  if (class(dt[, MHC]) == "list") stop("MHC column must be a character column, not a list, unlist the column and rerun garnish_predictions.")
-  
-  # remove double or more spaces in MHC string (will not bug until garnish_fitness)
-  dt[, MHC %>% unique %>% stringr::str_replace_all("\\ +", " ")]
 
   input_type <- vector()
 
@@ -1304,24 +1295,16 @@ garnish_predictions <- function(dt = NULL,
 Input data table must be from
 garnish.variants or in
 one of these forms:
-
 dt with transcript id:
-
-
      Column name                 Example input
-
      sample_id                   sample_1
      ensembl_transcript_id       ENST00000311936
      cDNA_change                 c.718T>A
      MHC                         HLA-A02:01 HLA-A03:01
                                  H-2-Kb H-2-Kb
                                  HLA-DRB111:07 [second type]
-
-
 dt with peptide:
-
      Column name                 Example input
-
      sample_id                   <same as above>
      pep_mut                     MTEYKLVVVDAGGVGKSALTIQLIQNHFV
      mutant_index                all
@@ -1636,14 +1619,14 @@ if (predict){
 
    if (check_pred_tools() %>% unlist %>% all){
 
-      #dto <- run_netMHC(dtl[[2]])
+      dto <- run_netMHC(dtl[[2]])
 
       run_mhcflurry()
       run_mhcnuggets()
 
-      dt <- merge_predictions(dtl[[1]])
+      dt <- merge_predictions(dto, dtl[[1]])
 
-      cols <- dt %>% names %include% "((mhcflurry_prediction$)|(mhcnuggets_pred_gru)|(mhcnuggets_pred_lstm)"
+      cols <- dt %>% names %include% "(best_netMHC)|(mhcflurry_prediction$)|(mhcnuggets_pred_gru)|(mhcnuggets_pred_lstm)"
 
 confi <- function(dt){
 
