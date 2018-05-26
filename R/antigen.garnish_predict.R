@@ -1636,14 +1636,14 @@ if (predict){
 
    if (check_pred_tools() %>% unlist %>% all){
 
-      dto <- run_netMHC(dtl[[2]])
+      #dto <- run_netMHC(dtl[[2]])
 
       run_mhcflurry()
       run_mhcnuggets()
 
-      dt <- merge_predictions(dto, dtl[[1]])
+      dt <- merge_predictions(dtl[[1]])
 
-      cols <- dt %>% names %include% "(best_netMHC)|(mhcflurry_prediction$)|(mhcnuggets_pred_gru)|(mhcnuggets_pred_lstm)"
+      cols <- dt %>% names %include% "((mhcflurry_prediction$)|(mhcnuggets_pred_gru)|(mhcnuggets_pred_lstm)"
 
 confi <- function(dt){
 
